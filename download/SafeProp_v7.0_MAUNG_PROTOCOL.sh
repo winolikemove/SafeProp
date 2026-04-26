@@ -297,7 +297,7 @@ bersih(){
     for pkg in \
         com.google.android.gms com.google.android.gsf com.android.vending \
         com.lazada.android com.tokopedia.tkpd com.shopee.id \
-        com.ss.android.ugc.trill com.android.chrome id.dana \
+        com.ss.android.ugc.trill com.zhiliaoapp.musically com.android.chrome id.dana \
         jp.naver.line.android \
         com.whatsapp com.whatsapp.w4b \
         com.lemon.lvoverseas com.facebook.katana
@@ -709,18 +709,60 @@ acak1() {
     IDKEY=$(grep -n "userkey" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
     [ -z "$IDKEY" ] && return
 
-    # Randomize value untuk app tracking
-    IDV1=$(grep -n "com.lazada.android" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # Randomize value untuk semua app tracking
+    # Google core
     IDLINE1=$(grep -n "com.google.android.gms" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    IDGSF1=$(grep -n "com.google.android.gsf" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
     IDPS1=$(grep -n "com.android.vending" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # E-commerce
+    IDV1=$(grep -n "com.lazada.android" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    IDTKPD1=$(grep -n "com.tokopedia.tkpd" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    IDSHP1=$(grep -n "com.shopee.id" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # Sosmed
+    IDTRILL1=$(grep -n "com.ss.android.ugc.trill" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    IDTIKTOK1=$(grep -n "com.zhiliaoapp.musically" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    IDFB1=$(grep -n "com.facebook.katana" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # Browser
+    IDCHR1=$(grep -n "com.android.chrome" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # Finance
+    IDDANA1=$(grep -n "id.dana" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # Chat
+    IDLINE1C=$(grep -n "jp.naver.line.android" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    IDWA1=$(grep -n "com.whatsapp" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # Lainnya
+    IDLVL1=$(grep -n "com.lemon.lvoverseas" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
 
-    IDRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    # Generate random values
     IDLINERANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDGSFRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     IDPSRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDTKPDRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDSHPRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDTRILLRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDTIKTOKRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDFBRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDCHRRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDDANARANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDLINECRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDWARANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDLVLRANDOM=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
 
+    # Apply
     [ -n "$IDLINE1" ] && sed -i "s/$IDLINE1/$IDLINERANDOM/g" "$SSAID_FILE"
-    [ -n "$IDV1" ] && sed -i "s/$IDV1/$IDRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDGSF1" ] && sed -i "s/$IDGSF1/$IDGSFRANDOM/g" "$SSAID_FILE"
     [ -n "$IDPS1" ] && sed -i "s/$IDPS1/$IDPSRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDV1" ] && sed -i "s/$IDV1/$IDRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDTKPD1" ] && sed -i "s/$IDTKPD1/$IDTKPDRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDSHP1" ] && sed -i "s/$IDSHP1/$IDSHPRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDTRILL1" ] && sed -i "s/$IDTRILL1/$IDTRILLRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDTIKTOK1" ] && sed -i "s/$IDTIKTOK1/$IDTIKTOKRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDFB1" ] && sed -i "s/$IDFB1/$IDFBRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDCHR1" ] && sed -i "s/$IDCHR1/$IDCHRRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDDANA1" ] && sed -i "s/$IDDANA1/$IDDANARANDOM/g" "$SSAID_FILE"
+    [ -n "$IDLINE1C" ] && sed -i "s/$IDLINE1C/$IDLINECRANDOM/g" "$SSAID_FILE"
+    [ -n "$IDWA1" ] && sed -i "s/$IDWA1/$IDWARANDOM/g" "$SSAID_FILE"
+    [ -n "$IDLVL1" ] && sed -i "s/$IDLVL1/$IDLVLRANDOM/g" "$SSAID_FILE"
 }
 
 # --- SSAID Randomize — defaultValue (dari AcakTeMPeOPPO acak2) ---
@@ -731,27 +773,60 @@ acak2() {
     IDKEY=$(grep -n "userkey" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
     [ -z "$IDKEY" ] && return
 
-    # Randomize defaultValue untuk app tracking
+    # Randomize defaultValue untuk semua app tracking
+    # Google core
+    IDLINE2=$(grep -n "com.google.android.gms" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDGSF2=$(grep -n "com.google.android.gsf" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDPS2=$(grep -n "com.android.vending" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    # E-commerce
     IDV2=$(grep -n "com.lazada.android" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
     IDV33=$(grep -n "com.tokopedia.tkpd" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDSHP2=$(grep -n "com.shopee.id" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    # Sosmed
+    IDTRILL2=$(grep -n "com.ss.android.ugc.trill" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDTIKTOK2=$(grep -n "com.zhiliaoapp.musically" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDFB2=$(grep -n "com.facebook.katana" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    # Browser
     IDV_CHROME=$(grep -n "com.android.chrome" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    # Finance
     IDV_DANA=$(grep -n "id.dana" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    IDPS2=$(grep -n "com.android.vending" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    IDLINE2=$(grep -n "com.google.android.gms" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    # Chat
+    IDLINE2C=$(grep -n "jp.naver.line.android" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDWA2=$(grep -n "com.whatsapp" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    # Lainnya
+    IDLVL2=$(grep -n "com.lemon.lvoverseas" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
 
+    # Generate random values
+    IDLINERANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDGSFRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     IDPSRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     IDRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     IDRANDOM33=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDSHPRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDTRILLRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDTIKTOKRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDFBRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     IDRANDOM_CHROME=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     IDRANDOM_DANA=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
-    IDLINERANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDLINECRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDWARANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    IDLVLRANDOM2=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
 
+    # Apply
     [ -n "$IDLINE2" ] && sed -i "s/$IDLINE2/$IDLINERANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDGSF2" ] && sed -i "s/$IDGSF2/$IDGSFRANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDPS2" ] && sed -i "s/$IDPS2/$IDPSRANDOM2/g" "$SSAID_FILE"
     [ -n "$IDV2" ] && sed -i "s/$IDV2/$IDRANDOM2/g" "$SSAID_FILE"
     [ -n "$IDV33" ] && sed -i "s/$IDV33/$IDRANDOM33/g" "$SSAID_FILE"
+    [ -n "$IDSHP2" ] && sed -i "s/$IDSHP2/$IDSHPRANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDTRILL2" ] && sed -i "s/$IDTRILL2/$IDTRILLRANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDTIKTOK2" ] && sed -i "s/$IDTIKTOK2/$IDTIKTOKRANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDFB2" ] && sed -i "s/$IDFB2/$IDFBRANDOM2/g" "$SSAID_FILE"
     [ -n "$IDV_CHROME" ] && sed -i "s/$IDV_CHROME/$IDRANDOM_CHROME/g" "$SSAID_FILE"
     [ -n "$IDV_DANA" ] && sed -i "s/$IDV_DANA/$IDRANDOM_DANA/g" "$SSAID_FILE"
-    [ -n "$IDPS2" ] && sed -i "s/$IDPS2/$IDPSRANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDLINE2C" ] && sed -i "s/$IDLINE2C/$IDLINECRANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDWA2" ] && sed -i "s/$IDWA2/$IDWARANDOM2/g" "$SSAID_FILE"
+    [ -n "$IDLVL2" ] && sed -i "s/$IDLVL2/$IDLVLRANDOM2/g" "$SSAID_FILE"
 }
 
 # --- Acak serial ---
@@ -857,10 +932,12 @@ ritual(){
     for pkg in \
         com.google.android.gms \
         com.google.android.gsf \
+        com.android.vending \
         com.lazada.android \
         com.tokopedia.tkpd \
         com.shopee.id \
         com.ss.android.ugc.trill \
+        com.zhiliaoapp.musically \
         com.android.chrome \
         id.dana \
         jp.naver.line.android \
