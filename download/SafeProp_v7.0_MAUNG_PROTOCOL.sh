@@ -929,12 +929,25 @@ ritual(){
     rm -rf /data/system/users/0/settings_config.xml 2>/dev/null
     rm -f /data/system/users/0/*.fallback 2>/dev/null
 
-    # Data folder — deep wipe semua sisa
+    # Data folder — deep wipe semua sisa (3-path: /data/data/ + /data/user/0/ + /data/user_de/0/)
+    # Sinkron dengan acak1/acak2 target list + system components
     for pkg in \
-        com.android.location.fused \
         com.google.android.gms \
         com.google.android.gsf \
+        com.android.vending \
         com.lazada.android \
+        com.tokopedia.tkpd \
+        com.shopee.id \
+        com.ss.android.ugc.trill \
+        com.zhiliaoapp.musically \
+        com.facebook.katana \
+        com.android.chrome \
+        id.dana \
+        jp.naver.line.android \
+        com.whatsapp \
+        com.whatsapp.w4b \
+        com.lemon.lvoverseas \
+        com.android.location.fused \
         android.auto_generated_rro_vendor__ \
         android.ext.services \
         android.ext.shared \
@@ -952,27 +965,6 @@ ritual(){
         rm -rf /data/data/"$pkg"/* 2>/dev/null
         rm -rf /data/user/0/"$pkg"/* 2>/dev/null
         rm -rf /data/user_de/0/"$pkg"/* 2>/dev/null
-    done
-
-    # Google apps data folder deep wipe
-    for pkg in \
-        com.google.android.gms \
-        com.google.android.gsf \
-        com.android.vending \
-        com.lazada.android \
-        com.tokopedia.tkpd \
-        com.shopee.id \
-        com.ss.android.ugc.trill \
-        com.zhiliaoapp.musically \
-        com.android.chrome \
-        id.dana \
-        jp.naver.line.android \
-        com.whatsapp \
-        com.whatsapp.w4b \
-        com.lemon.lvoverseas \
-        com.facebook.katana
-    do
-        rm -rf /data/user/0/"$pkg"/* 2>/dev/null
     done
 
     # Dalvik-cache total wipe
