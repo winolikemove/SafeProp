@@ -848,38 +848,62 @@ acakserial(){
 ritual(){
 
     # === PASS 1: STOP ULANG (pastikan semua mati) ===
-    am force-stop com.ss.android.ugc.trill 2>/dev/null
-    am force-stop org.chromium.chrome.stable 2>/dev/null
-    am force-stop com.lazada.android 2>/dev/null
-    am force-stop com.tokopedia.tkpd 2>/dev/null
-    am force-stop com.android.chrome 2>/dev/null
+    # Sinkron dengan acak1/acak2 target list
+    for pkg in \
+        com.google.android.gms \
+        com.google.android.gsf \
+        com.android.vending \
+        com.lazada.android \
+        com.tokopedia.tkpd \
+        com.shopee.id \
+        com.ss.android.ugc.trill \
+        com.zhiliaoapp.musically \
+        com.facebook.katana \
+        com.android.chrome \
+        org.chromium.chrome.stable \
+        id.dana \
+        jp.naver.line.android \
+        com.whatsapp \
+        com.whatsapp.w4b \
+        com.lemon.lvoverseas
+    do
+        am force-stop "$pkg" 2>/dev/null
+    done
+    # System overlay & wellbeing
     am force-stop com.google.android.overlay.gmsconfig.common 2>/dev/null
     am force-stop com.google.android.overlay.gmsconfig.gsa 2>/dev/null
     am force-stop com.google.android.apps.wellbeing 2>/dev/null
-    am force-stop com.google.android.gms 2>/dev/null
-    am force-stop com.google.android.gsf 2>/dev/null
-    am force-stop com.android.vending 2>/dev/null
-    am force-stop jp.naver.line.android 2>/dev/null
-    am force-stop com.facebook.katana 2>/dev/null
     am force-stop free.vpn.secure.turbo.proxy.hotspot.vpnindonesia 2>/dev/null
 
     # === PASS 2: CLEAR ULANG (second sweep) ===
-    pm clear com.ss.android.ugc.trill 2>/dev/null
-    pm clear com.lazada.android 2>/dev/null
-    pm clear com.tokopedia.tkpd 2>/dev/null
-    pm clear org.chromium.chrome.stable 2>/dev/null
+    # Sinkron dengan acak1/acak2 target list
+    for pkg in \
+        com.google.android.gms \
+        com.google.android.gsf \
+        com.android.vending \
+        com.lazada.android \
+        com.tokopedia.tkpd \
+        com.shopee.id \
+        com.ss.android.ugc.trill \
+        com.zhiliaoapp.musically \
+        com.facebook.katana \
+        com.android.chrome \
+        org.chromium.chrome.stable \
+        id.dana \
+        jp.naver.line.android \
+        com.whatsapp \
+        com.whatsapp.w4b \
+        com.lemon.lvoverseas
+    do
+        pm clear "$pkg" 2>/dev/null
+    done
+    # System components
     pm clear com.android.location.fused 2>/dev/null
-    pm clear com.android.chrome 2>/dev/null
-    pm clear jp.naver.line.android 2>/dev/null
-    pm clear com.facebook.katana 2>/dev/null
     pm clear free.vpn.secure.turbo.proxy.hotspot.vpnindonesia 2>/dev/null
     pm clear com.google.android.overlay.gmsconfig.common 2>/dev/null
     pm clear com.google.android.overlay.gmsconfig.gsa 2>/dev/null
     pm clear com.google.android.apps.wellbeing 2>/dev/null
-    pm clear com.google.android.gms 2>/dev/null
-    pm clear com.google.android.gsf 2>/dev/null
     pm clear com.google.android.ims 2>/dev/null
-    pm clear com.android.vending 2>/dev/null
     pm clear com.android.webview 2>/dev/null
 
     # === PASS 3: NUJEK SEMUA SISA DATA ===
