@@ -107,6 +107,7 @@ modpesoff(){
     # Setelah reboot, Android auto-restore semua.
     # iptables reset, routing rebuild, WiFi/BT/Data auto-on, RIL radio on.
     # Jadi gak perlu restore manual.
+    :
 }
 
 # --- Progress bar ---
@@ -297,7 +298,7 @@ bersih(){
     for pkg in \
         com.google.android.gms com.google.android.gsf com.android.vending \
         com.lazada.android com.tokopedia.tkpd com.shopee.id \
-        com.ss.android.ugc.trill com.android.chrome id.dana \
+        com.ss.android.ugc.trill com.zhiliaoapp.musically com.android.chrome id.dana \
         jp.naver.line.android \
         com.whatsapp com.whatsapp.w4b \
         com.lemon.lvoverseas com.facebook.katana
@@ -666,8 +667,8 @@ PROPS
     fi
 
     # Fallback XML edit (dari AcakTeMPeOPPO)
-    FUBTNAME=$(grep -n bluetooth_name /data/system/users/0/settings_secure.xml 2>/dev/null | grep -o 'value=".*"*' | cut -d '"' -f2)
-    FUDVNAME=$(grep -n device_name /data/system/users/0/settings_global.xml 2>/dev/null | grep -o 'value=".*"*' | cut -d '"' -f2)
+    FUBTNAME=$(grep -n bluetooth_name /data/system/users/0/settings_secure.xml 2>/dev/null | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    FUDVNAME=$(grep -n device_name /data/system/users/0/settings_global.xml 2>/dev/null | grep -o 'value="[^"]*"' | cut -d '"' -f2)
 
     # Edit settings_secure.xml
     if [ -n "$FUBTNAME" ]; then
@@ -675,7 +676,7 @@ PROPS
     fi
     # Edit fallback
     if [ -f /data/system/users/0/settings_secure.xml.fallback ]; then
-        FUBTNAMEFB=$(grep -n bluetooth_name /data/system/users/0/settings_secure.xml.fallback 2>/dev/null | grep -o 'value=".*"*' | cut -d '"' -f2)
+        FUBTNAMEFB=$(grep -n bluetooth_name /data/system/users/0/settings_secure.xml.fallback 2>/dev/null | grep -o 'value="[^"]*"' | cut -d '"' -f2)
         [ -n "$FUBTNAMEFB" ] && sed -i "s/$FUBTNAMEFB/$NEWNAME/g" /data/system/users/0/settings_secure.xml.fallback 2>/dev/null
     fi
 
@@ -685,7 +686,7 @@ PROPS
     fi
     # Edit fallback
     if [ -f /data/system/users/0/settings_global.xml.fallback ]; then
-        FUDVNAMEFB=$(grep -n device_name /data/system/users/0/settings_global.xml.fallback 2>/dev/null | grep -o 'value=".*"*' | cut -d '"' -f2)
+        FUDVNAMEFB=$(grep -n device_name /data/system/users/0/settings_global.xml.fallback 2>/dev/null | grep -o 'value="[^"]*"' | cut -d '"' -f2)
         [ -n "$FUDVNAMEFB" ] && sed -i "s/$FUDVNAMEFB/$NEWNAME/g" /data/system/users/0/settings_global.xml.fallback 2>/dev/null
     fi
 
@@ -702,87 +703,121 @@ PROPS
 }
 
 # --- SSAID Randomize — value (dari AcakTeMPeOPPO acak1) ---
-# Target: 9 paket tracking utama (sama dengan acak2)
+# Target: 14 paket tracking utama (sama dengan acak2)
+# Fix: gunakan name="..." exact match agar tidak salah tangkap substring
+# Fix: gunakan [^"]* non-greedy agar value tidak over-match
 acak1() {
     SSAID_FILE="/data/system/users/0/settings_ssaid.xml"
     [ ! -f "$SSAID_FILE" ] && return
 
-    IDKEY=$(grep -n "userkey" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDKEY=$(grep -n 'name="userkey"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
     [ -z "$IDKEY" ] && return
 
-    # Randomize value untuk app tracking (9 target)
-    _a1_gms=$(grep -n "com.google.android.gms" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_vending=$(grep -n "com.android.vending" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_lazada=$(grep -n "com.lazada.android" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_tokopedia=$(grep -n "com.tokopedia.tkpd" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_shopee=$(grep -n "com.shopee.id" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_trill=$(grep -n "com.ss.android.ugc.trill" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_tiktok=$(grep -n "com.zhiliaoapp.musically" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_chrome=$(grep -n "com.android.chrome" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
-    _a1_dana=$(grep -n "id.dana" "$SSAID_FILE" | grep -o 'value=".*"*' | cut -d '"' -f2)
+    # Randomize value untuk app tracking (14 target)
+    _a1_gms=$(grep -n 'name="com.google.android.gms"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_gsf=$(grep -n 'name="com.google.android.gsf"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_vending=$(grep -n 'name="com.android.vending"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_lazada=$(grep -n 'name="com.lazada.android"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_tokopedia=$(grep -n 'name="com.tokopedia.tkpd"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_shopee=$(grep -n 'name="com.shopee.id"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_trill=$(grep -n 'name="com.ss.android.ugc.trill"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_tiktok=$(grep -n 'name="com.zhiliaoapp.musically"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_facebook=$(grep -n 'name="com.facebook.katana"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_chrome=$(grep -n 'name="com.android.chrome"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_dana=$(grep -n 'name="id.dana"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_line=$(grep -n 'name="jp.naver.line.android"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_whatsapp=$(grep -n 'name="com.whatsapp"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
+    _a1_lemon=$(grep -n 'name="com.lemon.lvoverseas"' "$SSAID_FILE" | grep -o 'value="[^"]*"' | cut -d '"' -f2)
 
     # Generate random 16-char hex dari IDKEY charset
     _a1_r_gms=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a1_r_gsf=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_vending=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_lazada=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_tokopedia=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_shopee=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_trill=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_tiktok=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a1_r_facebook=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_chrome=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a1_r_dana=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a1_r_line=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a1_r_whatsapp=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a1_r_lemon=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
 
     [ -n "$_a1_gms" ] && sed -i "s/$_a1_gms/$_a1_r_gms/g" "$SSAID_FILE"
+    [ -n "$_a1_gsf" ] && sed -i "s/$_a1_gsf/$_a1_r_gsf/g" "$SSAID_FILE"
     [ -n "$_a1_vending" ] && sed -i "s/$_a1_vending/$_a1_r_vending/g" "$SSAID_FILE"
     [ -n "$_a1_lazada" ] && sed -i "s/$_a1_lazada/$_a1_r_lazada/g" "$SSAID_FILE"
     [ -n "$_a1_tokopedia" ] && sed -i "s/$_a1_tokopedia/$_a1_r_tokopedia/g" "$SSAID_FILE"
     [ -n "$_a1_shopee" ] && sed -i "s/$_a1_shopee/$_a1_r_shopee/g" "$SSAID_FILE"
     [ -n "$_a1_trill" ] && sed -i "s/$_a1_trill/$_a1_r_trill/g" "$SSAID_FILE"
     [ -n "$_a1_tiktok" ] && sed -i "s/$_a1_tiktok/$_a1_r_tiktok/g" "$SSAID_FILE"
+    [ -n "$_a1_facebook" ] && sed -i "s/$_a1_facebook/$_a1_r_facebook/g" "$SSAID_FILE"
     [ -n "$_a1_chrome" ] && sed -i "s/$_a1_chrome/$_a1_r_chrome/g" "$SSAID_FILE"
     [ -n "$_a1_dana" ] && sed -i "s/$_a1_dana/$_a1_r_dana/g" "$SSAID_FILE"
+    [ -n "$_a1_line" ] && sed -i "s/$_a1_line/$_a1_r_line/g" "$SSAID_FILE"
+    [ -n "$_a1_whatsapp" ] && sed -i "s/$_a1_whatsapp/$_a1_r_whatsapp/g" "$SSAID_FILE"
+    [ -n "$_a1_lemon" ] && sed -i "s/$_a1_lemon/$_a1_r_lemon/g" "$SSAID_FILE"
 }
 
 # --- SSAID Randomize — defaultValue (dari AcakTeMPeOPPO acak2) ---
-# Target: 9 paket tracking utama (sama dengan acak1)
+# Target: 14 paket tracking utama (sama dengan acak1)
+# Fix: gunakan name="..." exact match agar tidak salah tangkap substring
+# Fix: gunakan [^"]* non-greedy agar defaultValue tidak over-match
 acak2() {
     SSAID_FILE="/data/system/users/0/settings_ssaid.xml"
     [ ! -f "$SSAID_FILE" ] && return
 
-    IDKEY=$(grep -n "userkey" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    IDKEY=$(grep -n 'name="userkey"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
     [ -z "$IDKEY" ] && return
 
-    # Randomize defaultValue untuk app tracking (9 target)
-    _a2_gms=$(grep -n "com.google.android.gms" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_vending=$(grep -n "com.android.vending" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_lazada=$(grep -n "com.lazada.android" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_tokopedia=$(grep -n "com.tokopedia.tkpd" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_shopee=$(grep -n "com.shopee.id" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_trill=$(grep -n "com.ss.android.ugc.trill" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_tiktok=$(grep -n "com.zhiliaoapp.musically" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_chrome=$(grep -n "com.android.chrome" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
-    _a2_dana=$(grep -n "id.dana" "$SSAID_FILE" | grep -o 'defaultValue=".*"*' | cut -d '"' -f2)
+    # Randomize defaultValue untuk app tracking (14 target)
+    _a2_gms=$(grep -n 'name="com.google.android.gms"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_gsf=$(grep -n 'name="com.google.android.gsf"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_vending=$(grep -n 'name="com.android.vending"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_lazada=$(grep -n 'name="com.lazada.android"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_tokopedia=$(grep -n 'name="com.tokopedia.tkpd"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_shopee=$(grep -n 'name="com.shopee.id"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_trill=$(grep -n 'name="com.ss.android.ugc.trill"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_tiktok=$(grep -n 'name="com.zhiliaoapp.musically"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_facebook=$(grep -n 'name="com.facebook.katana"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_chrome=$(grep -n 'name="com.android.chrome"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_dana=$(grep -n 'name="id.dana"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_line=$(grep -n 'name="jp.naver.line.android"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_whatsapp=$(grep -n 'name="com.whatsapp"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
+    _a2_lemon=$(grep -n 'name="com.lemon.lvoverseas"' "$SSAID_FILE" | grep -o 'defaultValue="[^"]*"' | cut -d '"' -f2)
 
     # Generate random 16-char hex dari IDKEY charset
     _a2_r_gms=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a2_r_gsf=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_vending=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_lazada=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_tokopedia=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_shopee=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_trill=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_tiktok=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a2_r_facebook=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_chrome=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
     _a2_r_dana=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a2_r_line=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a2_r_whatsapp=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
+    _a2_r_lemon=$(head -3 /dev/urandom | tr -cd "$IDKEY" | cut -c -16)
 
     [ -n "$_a2_gms" ] && sed -i "s/$_a2_gms/$_a2_r_gms/g" "$SSAID_FILE"
+    [ -n "$_a2_gsf" ] && sed -i "s/$_a2_gsf/$_a2_r_gsf/g" "$SSAID_FILE"
     [ -n "$_a2_vending" ] && sed -i "s/$_a2_vending/$_a2_r_vending/g" "$SSAID_FILE"
     [ -n "$_a2_lazada" ] && sed -i "s/$_a2_lazada/$_a2_r_lazada/g" "$SSAID_FILE"
     [ -n "$_a2_tokopedia" ] && sed -i "s/$_a2_tokopedia/$_a2_r_tokopedia/g" "$SSAID_FILE"
     [ -n "$_a2_shopee" ] && sed -i "s/$_a2_shopee/$_a2_r_shopee/g" "$SSAID_FILE"
     [ -n "$_a2_trill" ] && sed -i "s/$_a2_trill/$_a2_r_trill/g" "$SSAID_FILE"
     [ -n "$_a2_tiktok" ] && sed -i "s/$_a2_tiktok/$_a2_r_tiktok/g" "$SSAID_FILE"
+    [ -n "$_a2_facebook" ] && sed -i "s/$_a2_facebook/$_a2_r_facebook/g" "$SSAID_FILE"
     [ -n "$_a2_chrome" ] && sed -i "s/$_a2_chrome/$_a2_r_chrome/g" "$SSAID_FILE"
     [ -n "$_a2_dana" ] && sed -i "s/$_a2_dana/$_a2_r_dana/g" "$SSAID_FILE"
+    [ -n "$_a2_line" ] && sed -i "s/$_a2_line/$_a2_r_line/g" "$SSAID_FILE"
+    [ -n "$_a2_whatsapp" ] && sed -i "s/$_a2_whatsapp/$_a2_r_whatsapp/g" "$SSAID_FILE"
+    [ -n "$_a2_lemon" ] && sed -i "s/$_a2_lemon/$_a2_r_lemon/g" "$SSAID_FILE"
 }
 
 # --- Acak serial ---
@@ -806,6 +841,7 @@ ritual(){
     am force-stop org.chromium.chrome.stable 2>/dev/null
     am force-stop com.lazada.android 2>/dev/null
     am force-stop com.tokopedia.tkpd 2>/dev/null
+    am force-stop com.shopee.id 2>/dev/null
     am force-stop com.android.chrome 2>/dev/null
     am force-stop com.google.android.overlay.gmsconfig.common 2>/dev/null
     am force-stop com.google.android.overlay.gmsconfig.gsa 2>/dev/null
@@ -813,19 +849,30 @@ ritual(){
     am force-stop com.google.android.gms 2>/dev/null
     am force-stop com.google.android.gsf 2>/dev/null
     am force-stop com.android.vending 2>/dev/null
+    am force-stop com.zhiliaoapp.musically 2>/dev/null
     am force-stop jp.naver.line.android 2>/dev/null
     am force-stop com.facebook.katana 2>/dev/null
+    am force-stop id.dana 2>/dev/null
+    am force-stop com.whatsapp 2>/dev/null
+    am force-stop com.whatsapp.w4b 2>/dev/null
+    am force-stop com.lemon.lvoverseas 2>/dev/null
     am force-stop free.vpn.secure.turbo.proxy.hotspot.vpnindonesia 2>/dev/null
 
     # === PASS 2: CLEAR ULANG (second sweep) ===
     pm clear com.ss.android.ugc.trill 2>/dev/null
     pm clear com.lazada.android 2>/dev/null
     pm clear com.tokopedia.tkpd 2>/dev/null
+    pm clear com.shopee.id 2>/dev/null
     pm clear org.chromium.chrome.stable 2>/dev/null
     pm clear com.android.location.fused 2>/dev/null
     pm clear com.android.chrome 2>/dev/null
+    pm clear com.zhiliaoapp.musically 2>/dev/null
     pm clear jp.naver.line.android 2>/dev/null
     pm clear com.facebook.katana 2>/dev/null
+    pm clear id.dana 2>/dev/null
+    pm clear com.whatsapp 2>/dev/null
+    pm clear com.whatsapp.w4b 2>/dev/null
+    pm clear com.lemon.lvoverseas 2>/dev/null
     pm clear free.vpn.secure.turbo.proxy.hotspot.vpnindonesia 2>/dev/null
     pm clear com.google.android.overlay.gmsconfig.common 2>/dev/null
     pm clear com.google.android.overlay.gmsconfig.gsa 2>/dev/null
@@ -859,12 +906,24 @@ ritual(){
     rm -rf /data/system/users/0/settings_config.xml 2>/dev/null
     rm -f /data/system/users/0/*.fallback 2>/dev/null
 
-    # Data folder — deep wipe semua sisa
+    # Data folder — deep wipe (MERGED: semua 14 acak targets + system components, 3-path)
     for pkg in \
         com.android.location.fused \
         com.google.android.gms \
         com.google.android.gsf \
+        com.android.vending \
         com.lazada.android \
+        com.tokopedia.tkpd \
+        com.shopee.id \
+        com.ss.android.ugc.trill \
+        com.zhiliaoapp.musically \
+        com.facebook.katana \
+        com.android.chrome \
+        id.dana \
+        jp.naver.line.android \
+        com.whatsapp \
+        com.whatsapp.w4b \
+        com.lemon.lvoverseas \
         android.auto_generated_rro_vendor__ \
         android.ext.services \
         android.ext.shared \
@@ -884,25 +943,6 @@ ritual(){
         rm -rf /data/user_de/0/"$pkg"/* 2>/dev/null
     done
 
-    # Google apps data folder deep wipe
-    for pkg in \
-        com.google.android.gms \
-        com.google.android.gsf \
-        com.lazada.android \
-        com.tokopedia.tkpd \
-        com.shopee.id \
-        com.ss.android.ugc.trill \
-        com.android.chrome \
-        id.dana \
-        jp.naver.line.android \
-        com.whatsapp \
-        com.whatsapp.w4b \
-        com.lemon.lvoverseas \
-        com.facebook.katana
-    do
-        rm -rf /data/user/0/"$pkg"/* 2>/dev/null
-    done
-
     # Dalvik-cache total wipe
     rm -rf /data/dalvik-cache/ 2>/dev/null
     rm -rf /data/cache/ 2>/dev/null
@@ -916,14 +956,55 @@ ritual(){
 }
 
 # --- Nuke tracking — dipanggil sesaat sebelum reboot ---
+# Fix: Anti-wizard lock 4-LAYER agar setup wizard TIDAK muncul setelah reboot
+# Layer 1: settings command (mungkin gagal karena provider mati, tapi dicoba)
+# Layer 2-3: Direct XML edit (insert SEBELUM </settings>, bukan append)
+# Layer 4: pm disable setup wizard
 nuketrack(){
+    # ===== LAYER 1: Settings command =====
+    settings put global device_provisioned 1 2>/dev/null
+    settings put secure user_setup_complete 1 2>/dev/null
+    settings put global setup_wizard_has_run 1 2>/dev/null
+
+    # ===== LAYER 2: Direct XML edit — settings_config.xml =====
+    CFG="/data/system/users/0/settings_config.xml"
+    if [ -f "$CFG" ]; then
+        # Insert device_provisioned sebelum </settings> kalau belum ada
+        if ! grep -q 'device_provisioned' "$CFG" 2>/dev/null; then
+            sed -i 's|</settings>|  <setting id="0" name="device_provisioned" value="1" package="android" />\n</settings>|' "$CFG" 2>/dev/null
+        else
+            sed -i 's|name="device_provisioned" value="0"|name="device_provisioned" value="1"|g' "$CFG" 2>/dev/null
+        fi
+        # Insert setup_wizard_has_run sebelum </settings> kalau belum ada
+        if ! grep -q 'setup_wizard_has_run' "$CFG" 2>/dev/null; then
+            sed -i 's|</settings>|  <setting id="0" name="setup_wizard_has_run" value="1" package="android" />\n</settings>|' "$CFG" 2>/dev/null
+        else
+            sed -i 's|name="setup_wizard_has_run" value="0"|name="setup_wizard_has_run" value="1"|g' "$CFG" 2>/dev/null
+        fi
+    fi
+
+    # ===== LAYER 3: Direct XML edit — settings_secure.xml =====
+    SEC="/data/system/users/0/settings_secure.xml"
+    if [ -f "$SEC" ]; then
+        if ! grep -q 'user_setup_complete' "$SEC" 2>/dev/null; then
+            sed -i 's|</settings>|  <setting id="0" name="user_setup_complete" value="1" package="android" />\n</settings>|' "$SEC" 2>/dev/null
+        else
+            sed -i 's|name="user_setup_complete" value="0"|name="user_setup_complete" value="1"|g' "$SEC" 2>/dev/null
+        fi
+    fi
+
+    # ===== LAYER 4: Disable setup wizard package =====
+    pm disable com.google.android.setupwizard 2>/dev/null
+    pm disable com.android.provision 2>/dev/null
+
+    # ===== Nuke tracking files =====
     rm -f /data/system/users/0/settings_ssaid.xml 2>/dev/null
     rm -f /data/system/users/0/package-restrictions.xml 2>/dev/null
-    rm -f /data/system/users/0/settings_config.xml 2>/dev/null
     rm -f /data/system/users/0/app_idle_stats.xml 2>/dev/null
     rm -f /data/system/users/0/*.fallback 2>/dev/null
     rm -f /data/system_ce/0/accounts_ce.db* 2>/dev/null
     rm -f /data/system_de/0/accounts_de.db* 2>/dev/null
+    # CATATAN: settings_config.xml TIDAK dihapus agar device_provisioned tetap ada
 }
 
 # ============================================================
