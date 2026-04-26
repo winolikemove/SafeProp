@@ -14,7 +14,7 @@
 | **Android Versi** | 11 |
 | **SDK Level** | 30 |
 | **Custom ROM** | crDroid Android 11 |
-| **Root** | Magisk |
+| **Root** | Magisk / Kernelsu Next |
 | **First API Level** | 28 |
 
 ## Software Environment
