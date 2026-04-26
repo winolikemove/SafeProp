@@ -4,13 +4,15 @@
 # Base: SafeProp v6.5 + AcakTeMPeOPPO Ritual
 # Target: Redmi Note 7 (lavender) | crDroid Android 11
 # Changelog v7.0:
-#   + SSAID randomize (acak1 + acak2)
+#   + SSAID randomize (acak1 + acak2) — 14 target sync
 #   + Ritual agresif di akhir (full purge)
 #   + Google apps clear tambahan
 #   + Data folder deletion tambahan
 #   + Fallback XML edit untuk BT/device name
 #   + VPN Indonesia clear
 #   + android_id delete
+#   + Anti-wizard lock (device_provisioned + setupwizard disable)
+#   + TikTok + Trill + Shopee ID target di acak/wipe/deep-wipe
 # ============================================================
 
 # --- Lockfile (cegah double-run) ---
@@ -195,6 +197,7 @@ bersih(){
     done
 
     # Stop Google apps tambahan (dari AcakTeMPeOPPO)
+    # NOTE: setupwizard TIDAK di-force-stop, biar flag provisioned tetap utuh
     for pkg in \
         com.google.android.gm \
         com.google.android.apps.photosgo \
@@ -209,8 +212,7 @@ bersih(){
         com.google.android.syncadapters.contacts \
         com.google.android.apps.restore \
         com.google.android.apps.pixelmigrate \
-        com.google.android.packageinstaller \
-        com.google.android.setupwizard
+        com.google.android.packageinstaller
     do
         am force-stop "$pkg" 2>/dev/null
     done
@@ -271,6 +273,7 @@ bersih(){
     done
 
     # Clear Google apps tambahan (dari AcakTeMPeOPPO wipegms + ritual)
+    # NOTE: setupwizard TIDAK di-pm-clear, biar flag provisioned tetap utuh
     for pkg in \
         com.google.android.gm \
         com.google.android.apps.photosgo \
@@ -286,7 +289,6 @@ bersih(){
         com.google.android.apps.restore \
         com.google.android.apps.pixelmigrate \
         com.google.android.packageinstaller \
-        com.google.android.setupwizard \
         com.android.localtransport \
         com.android.packageinstaller
     do
@@ -970,6 +972,38 @@ nuketrack(){
     rm -f /data/system/users/0/*.fallback 2>/dev/null
     rm -f /data/system_ce/0/accounts_ce.db* 2>/dev/null
     rm -f /data/system_de/0/accounts_de.db* 2>/dev/null
+
+    # Anti-wizard lock — cegah setup wizard setelah reboot
+    # Setelah delete settings_config.xml, Android kira device belum provisioned.
+    # Kita paksa flag supaya langsung ke home screen setelah reboot.
+    settings put global device_provisioned 1 2>/dev/null
+    settings put secure user_setup_complete 1 2>/dev/null
+    settings put global user_setup_complete 1 2>/dev/null
+    settings put global setup_wizard_has_run 1 2>/dev/null
+
+    # Lock langsung ke settings DB (SQLite) — lebih kuat dari settings command
+    for DB in /data/system/users/0/settings_global.xml \
+              /data/system/users/0/settings_secure.xml; do
+        [ -f "$DB" ] || continue
+        # Pastikan device_provisioned ada dan = 1
+        if ! grep -q 'device_provisioned' "$DB" 2>/dev/null; then
+            printf '  <setting id="0" name="device_provisioned" value="1" package="android" />
+' >> "$DB"
+        else
+            sed -i 's/name="device_provisioned" value="0"/name="device_provisioned" value="1"/g' "$DB" 2>/dev/null
+        fi
+        # Pastikan user_setup_complete ada dan = 1
+        if ! grep -q 'user_setup_complete' "$DB" 2>/dev/null; then
+            printf '  <setting id="0" name="user_setup_complete" value="1" package="android" />
+' >> "$DB"
+        else
+            sed -i 's/name="user_setup_complete" value="0"/name="user_setup_complete" value="1"/g' "$DB" 2>/dev/null
+        fi
+    done
+
+    # Juga disable setup wizard package supaya tidak auto-launch
+    pm disable com.google.android.setupwizard 2>/dev/null
+    pm disable com.android.provision 2>/dev/null
 }
 
 # ============================================================
